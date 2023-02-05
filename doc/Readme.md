@@ -1,3 +1,4 @@
 # Docs
-Project Proposal.pdf        -          Contains the Project Proposal
-PPT - Olympicstop.com.pdf   -          Contains Mockups of the Proposed Website  
+1. Project Proposal.pdf        -          Contains the Project Proposal
+
+2. PPT - Olympicstop.com.pdf   -          Contains Mockups of the Proposed Website  
