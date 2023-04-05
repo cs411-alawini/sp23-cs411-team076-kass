@@ -25,7 +25,7 @@ const SearchAthlete = () => {
         placeholder="Enter athlete's name"
       />
       <button onClick={handleSearch}>Search</button>
-      {searchResults.length > 0 && (
+      {searchResults.length > 0 ? (
         <table>
           <thead>
             <tr>
@@ -49,7 +49,7 @@ const SearchAthlete = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> ) : ( <p>No results found</p>
       )}
     </div>
   );
