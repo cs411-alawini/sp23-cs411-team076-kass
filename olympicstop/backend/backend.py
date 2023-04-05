@@ -15,6 +15,30 @@ conn: pymysql.connections.Connection = connector.connect(
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/sports_participants")
+def get_sports_participants():
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT Sport.NAME as Sport, Country.NAME as Country, Athlete.NAME as Athlete
+        FROM Sport
+        JOIN Plays ON Sport.ID = Plays.SPORTID
+        INNER JOIN Athlete ON Plays.ATHLETEID = Athlete.ID
+        INNER JOIN Country ON Athlete.COUNTRYID = Country.ID
+        GROUP BY Sport.NAME, Country.NAME, Athlete.ID
+        ORDER BY Sport.NAME;
+    ''')
+    results = cursor.fetchall()
+    sports_participants = []
+    for result in results:
+        sports_participants.append({
+            "sport": result[0],
+            "country": result[1],
+            "athlete": result[2]
+        })
+    response = {"sports_participants": sports_participants}
+    cursor.close()
+    return jsonify(response)
+
 @app.route("/add_athlete", methods=["POST"])
 def add_athlete():
     data = request.get_json()
