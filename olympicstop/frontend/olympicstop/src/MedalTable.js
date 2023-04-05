@@ -5,7 +5,7 @@ function MedalTable() {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch('https://127.0.0.1:8000/ranking');
+      const response = await fetch('https://35.209.21.140:8000/ranking');
       const data = await response.json();
       setRanking(data.ranking);
     }
