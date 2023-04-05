@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './SearchAthlete.css';
 
 const SearchAthlete = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,7 +41,11 @@ const SearchAthlete = () => {
                 <td>{result.athlete}</td>
                 <td>{result.sport}</td>
                 <td>{result.country}</td>
-                <td>{result.coach ? result.coach : 'N/A'}</td>
+                <td>
+      {result.coach && result.coach !== "NO COACH NEEDED"
+        ? result.coach
+        : "N/A"}
+    </td>
               </tr>
             ))}
           </tbody>
