@@ -17,11 +17,11 @@
 
 ## Project Information
 
-|   Info      |        Description     |
-| ----------- | ---------------------- |
-|  Title      |       olympicstop.com     |
-| System URL  |      TBD      |
-| Video Link  |      TBD      |
+|   Info      |        Description                  |
+| ----------- | ----------------------------------- |
+|  Title      |      olympicstop.com                |
+| System URL  |      http://34.172.76.136:3000      |
+| Video Link  |      TBD                            |
 
 ## Project Summary
 Tokyo Olympics Schedule viewer & Metrics Manager (Olympicstop.com)
