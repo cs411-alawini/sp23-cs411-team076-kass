@@ -7,7 +7,7 @@ const SearchAthlete = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`http://34.172.76.136:8000/search_athlete/${searchTerm}`);
+      const response = await axios.get(`https://127.0.0.1:8000/search_athlete/${searchTerm}`);
       setSearchResults(response.data.search_results);
     } catch (error) {
       console.error('Error fetching data:', error);
