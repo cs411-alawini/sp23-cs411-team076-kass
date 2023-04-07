@@ -7,7 +7,7 @@ function SportParticipant() {
     async function fetchData() {
       const response = await fetch('http://35.209.21.140:8000/sports_participants');
       const data = await response.json();
-      setRanking(data.ranking);
+      setRanking(data.sports_participants);
     }
     fetchData();
   }, []);
