@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MedalTable from './MedalTable';
 import SearchAthlete from './SearchAthlete';
 import SportParticipant from './SportParticipant';
+import SportsParticipants from './SportsParticipants';
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('medalTable');
@@ -21,10 +22,14 @@ function App() {
       <button onClick={() => handleComponentChange('sportParticipant')}>
         Some other button
       </button>
+      <button onClick={() => handleComponentChange('sportParticipants')}>
+        Some other button 1
+      </button>
 
       {activeComponent === 'medalTable' && <MedalTable />}
       {activeComponent === 'searchAthlete' && <SearchAthlete />}
       {activeComponent === 'sportParticipant' && <SportParticipant />}
+      {activeComponent === 'sportParticipants' && <SportsParticipants />}
     </div>
   );
 }
