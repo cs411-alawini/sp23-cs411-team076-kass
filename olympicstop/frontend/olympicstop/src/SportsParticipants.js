@@ -21,21 +21,21 @@ const SportsParticipants = () => {
     fetchData();
   }, []);
 
-  const filterParticipants = () => {
-    let filtered = sportsParticipants.filter((participant) => {
-      let sportMatch = !selectedSport || participant.sport === selectedSport;
-      let countryMatch = !selectedCountry || participant.country === selectedCountry;
-      return sportMatch && countryMatch;
-    });
-    setFilteredParticipants(filtered);
-  };
-
   const sports = [...new Set(sportsParticipants.map((participant) => participant.sport))];
   const countries = [...new Set(sportsParticipants.map((participant) => participant.country))];
 
   useEffect(() => {
+    const filterParticipants = () => {
+      let filtered = sportsParticipants.filter((participant) => {
+        let sportMatch = !selectedSport || participant.sport === selectedSport;
+        let countryMatch = !selectedCountry || participant.country === selectedCountry;
+        return sportMatch && countryMatch;
+      });
+      setFilteredParticipants(filtered);
+    };
+
     filterParticipants();
-  }, [selectedSport, selectedCountry]);
+  }, [selectedSport, selectedCountry, sportsParticipants]);
 
   return (
     <div>
