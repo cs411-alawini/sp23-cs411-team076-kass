@@ -3,6 +3,7 @@ import MedalTable from './MedalTable';
 import SearchAthlete from './SearchAthlete';
 import SportParticipant from './SportParticipant';
 import SportsParticipants from './SportsParticipants';
+import AddAthlete from './AddAthlete';
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('medalTable');
@@ -25,11 +26,15 @@ function App() {
       <button onClick={() => handleComponentChange('sportParticipants')}>
         Some other button 1
       </button>
+      <button onClick={() => handleComponentChange('addAthlete')}>
+        Add now
+      </button>
 
       {activeComponent === 'medalTable' && <MedalTable />}
       {activeComponent === 'searchAthlete' && <SearchAthlete />}
       {activeComponent === 'sportParticipant' && <SportParticipant />}
       {activeComponent === 'sportParticipants' && <SportsParticipants />}
+      {activeComponent === 'addAthlete' && <AddAthlete />}
     </div>
   );
 }
