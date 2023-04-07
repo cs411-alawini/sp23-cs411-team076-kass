@@ -33,6 +33,10 @@ const SportsParticipants = () => {
   const sports = [...new Set(sportsParticipants.map((participant) => participant.sport))];
   const countries = [...new Set(sportsParticipants.map((participant) => participant.country))];
 
+  useEffect(() => {
+    filterParticipants();
+  }, [selectedSport, selectedCountry]);
+
   return (
     <div>
       <h1>Sports Participants</h1>
@@ -43,7 +47,6 @@ const SportsParticipants = () => {
           value={selectedSport}
           onChange={(e) => {
             setSelectedSport(e.target.value);
-            filterParticipants();
           }}
         >
           <option value="">All</option>
@@ -61,7 +64,6 @@ const SportsParticipants = () => {
           value={selectedCountry}
           onChange={(e) => {
             setSelectedCountry(e.target.value);
-            filterParticipants();
           }}
         >
           <option value="">All</option>
