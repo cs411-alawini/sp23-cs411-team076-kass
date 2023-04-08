@@ -68,7 +68,7 @@ const DeleteAthlete = () => {
                       type="radio"
                       name="athlete"
                       value={result.id}
-                      onChange={(e) => setSelectedAthleteId(e.target.value)}
+                      onChange={(e) => setSelectedAthleteId(parseInt(e.target.value, 10))}
                     />
                   </td>
                   <td>{result.athlete}</td>
