@@ -9,7 +9,7 @@ const DeleteAthlete = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`http://35.209.21.140:8000/search_athlete/${searchTerm}`);
+      const response = await axios.get(`http://35.209.21.140:8000/search_athlete1/${searchTerm}`);
       setSearchResults(response.data.search_results);
     } catch (error) {
       console.error('Error fetching data:', error);

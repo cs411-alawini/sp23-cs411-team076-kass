@@ -126,6 +126,34 @@ def search_athlete(search_term):
     cursor.close()
     return jsonify(response)
 
+@app.route("/search_athlete1/<string:search_term>")
+def search_athlete1(search_term):
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT Athlete.ID as AthleteID, Athlete.NAME as Athlete, Sport.NAME as Sport, Country.NAME as Country, Coach.NAME as Coach
+        FROM Athlete
+        JOIN Plays ON Athlete.ID = Plays.ATHLETEID
+        JOIN Sport ON Plays.SPORTID = Sport.ID
+        JOIN Country ON Athlete.COUNTRYID = Country.ID
+        LEFT JOIN Coach ON Athlete.COACHID = Coach.ID
+        WHERE Athlete.NAME LIKE %s
+        ORDER BY Athlete.NAME;
+    ''', ('%' + search_term + '%',))
+    results = cursor.fetchall()
+    search_results = []
+    for result in results:
+        search_results.append({
+            "id": result[0],
+            "athlete": result[1],
+            "sport": result[2],
+            "country": result[3],
+            "coach": result[4] if result[4] else None
+        })
+    response = {"search_results": search_results}
+    cursor.close()
+    return jsonify(response)
+
+
 @app.route("/update_medals", methods=["POST"])
 def update_medals():
     data = request.get_json()
