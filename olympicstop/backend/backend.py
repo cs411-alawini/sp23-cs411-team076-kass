@@ -183,9 +183,9 @@ def update_medals():
     if not data or "country" not in data or "gold" not in data or "silver" not in data or "bronze" not in data:
         return jsonify({"error": "Required fields are missing"}), 400
     country = data["country"].rstrip('\r').strip()
-    gold = data["gold"]
-    silver = data["silver"]
-    bronze = data["bronze"]
+    gold = int(data["gold"])
+    silver = int(data["silver"])
+    bronze = int(data["bronze"])
     cursor = conn.cursor()
     cursor.execute("SELECT ID FROM Country WHERE TRIM(NAME) = %s", (country,))
     country_id = cursor.fetchone()
