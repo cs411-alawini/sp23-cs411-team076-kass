@@ -85,25 +85,20 @@ def add_athlete():
 @app.route("/delete_athlete", methods=["DELETE"])
 def delete_athlete():
     data = request.get_json()
-    if not data or ("id" not in data and "name" not in data):
-        return jsonify({"error": "At least one required field (id or name) is missing"}), 400
-    athlete_id = data.get("id", None)
-    athlete_name = data.get("name", None)
+    if not data or "id" not in data:
+        return jsonify({"error": "Required field (id) is missing"}), 400
+    athlete_id = data["id"]
     cursor = conn.cursor()
-    if athlete_id:
-        delete_condition = "ID = %s"
-        delete_params = (athlete_id,)
-    else:
-        delete_condition = "NAME = %s"
-        delete_params = (athlete_name,)
+    delete_condition = "ID = %s"
+    delete_params = (athlete_id,)
     cursor.execute(f"DELETE FROM Plays WHERE ATHLETEID IN (SELECT ID FROM Athlete WHERE {delete_condition})", delete_params)
     deleted_rows = cursor.execute(f"DELETE FROM Athlete WHERE {delete_condition}", delete_params)
     conn.commit()
     cursor.close()
     if deleted_rows > 0:
-        return jsonify({"success": f"Athlete {'with ID ' + str(athlete_id) if athlete_id else 'named ' + athlete_name} and associated records have been deleted"})
+        return jsonify({"success": f"Athlete with ID {athlete_id} and associated records have been deleted"})
     else:
-        return jsonify({"error": f"No athlete found {'with ID ' + str(athlete_id) if athlete_id else 'named ' + athlete_name}"}), 404
+        return jsonify({"error": f"No athlete found with ID {athlete_id}"}), 404
 
 @app.route("/search_athlete/<string:search_term>")
 def search_athlete(search_term):
