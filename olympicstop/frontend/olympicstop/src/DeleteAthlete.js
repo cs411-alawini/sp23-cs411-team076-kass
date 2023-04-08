@@ -16,19 +16,27 @@ const DeleteAthlete = () => {
     }
   };
 
+  //debug
   const handleDelete = async () => {
-    if (selectedAthleteId && window.confirm('Are you sure you want to delete this athlete?')) {
+    console.log('handleDelete called');
+    console.log('selectedAthleteId:', selectedAthleteId);
+    if (selectedAthleteId && window.confirm('Are you sure ?')) {
+      console.log('Attempting ID:', selectedAthleteId);
       try {
         const response = await axios.delete('http://35.209.21.140:8000/delete_athlete', {
           data: { id: selectedAthleteId },
         });
+        console.log('Delete response:', response);
         alert(response.data.success);
         setSearchResults(searchResults.filter((result) => result.id !== selectedAthleteId));
       } catch (error) {
-        console.error('Error deleting athlete:', error);
+        console.error('Error deleting:', error);
       }
+    } else {
+      console.log('Athlete not selected or deletion not confirmed');
     }
   };
+  
 
   return (
     <div>
