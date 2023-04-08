@@ -82,7 +82,7 @@ def add_athlete():
     if not sport_id:
         cursor.close()
         return jsonify({"error": f"Invalid sport_name '{sport_name}'"}), 404
-    if coach_name != '':
+    if coach_name:
         coach_name = coach_name.strip()
         cursor.execute("SELECT ID FROM Coach WHERE TRIM(NAME) = %s", (coach_name,))
         coach_id = cursor.fetchone()
