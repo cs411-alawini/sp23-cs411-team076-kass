@@ -64,6 +64,7 @@ const DeleteAthlete = () => {
               {searchResults.map((result, index) => (
                 <tr key={index}>
                   <td>
+                  {console.log('result.id:', result.id)}
                     <input
                       type="radio"
                       name="athlete"
