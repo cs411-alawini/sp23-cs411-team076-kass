@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import MedalTable from './MedalTable';
 import SearchAthlete from './SearchAthlete';
-import SportParticipant from './SportParticipant';
 import SportsParticipants from './SportsParticipants';
 import AddAthlete from './AddAthlete';
 import DeleteAthlete from './DeleteAthlete';
+import UpdateMedals from './UpdateMedals';
 
 function App() {
   const [activeComponent, setActiveComponent] = useState('medalTable');
@@ -21,9 +21,6 @@ function App() {
       <button onClick={() => handleComponentChange('searchAthlete')}>
         Search Athlete
       </button>
-      <button onClick={() => handleComponentChange('sportParticipant')}>
-        Some other button
-      </button>
       <button onClick={() => handleComponentChange('sportParticipants')}>
         Some other button 1
       </button>
@@ -33,13 +30,16 @@ function App() {
       <button onClick={() => handleComponentChange('deleteAthlete')}>
         Delete now
       </button>
+      <button onClick={() => handleComponentChange('updateMedals')}>
+        Update now
+      </button>
 
       {activeComponent === 'medalTable' && <MedalTable />}
       {activeComponent === 'searchAthlete' && <SearchAthlete />}
-      {activeComponent === 'sportParticipant' && <SportParticipant />}
       {activeComponent === 'sportParticipants' && <SportsParticipants />}
       {activeComponent === 'addAthlete' && <AddAthlete />}
       {activeComponent === 'deleteAthlete' && <DeleteAthlete />}
+      {activeComponent === 'updateMedals' && <UpdateMedals />}
     </div>
   );
 }

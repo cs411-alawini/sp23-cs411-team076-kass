@@ -15,6 +15,29 @@ conn: pymysql.connections.Connection = connector.connect(
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/medalstats")
+def medal_stats():
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT TRIM(Country.NAME), SUM(Medals.GOLD), SUM(Medals.SILVER), SUM(Medals.BRONZE)
+        FROM Country
+        JOIN Medals ON Country.ID = Medals.COUNTRYID
+        GROUP BY Country.NAME
+        ORDER BY SUM(Medals.GOLD + Medals.SILVER + Medals.BRONZE) DESC;
+    ''')
+    results = cursor.fetchall()
+    medal_stats = []
+    for result in results:
+        medal_stats.append({
+            "country": result[0],
+            "gold": result[1],
+            "silver": result[2],
+            "bronze": result[3],
+        })
+    response = {"medal_stats": medal_stats}
+    cursor.close()
+    return jsonify(response)
+
 @app.route("/sports_participants")
 def get_sports_participants():
     cursor = conn.cursor()

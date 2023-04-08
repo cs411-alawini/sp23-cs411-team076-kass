@@ -17,7 +17,11 @@ const AddAthlete = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://35.209.21.140:8000/add_athlete', athleteData);
+      const data = {
+        ...athleteData,
+        coach_name: athleteData.coach_name || null,
+      };
+      const response = await axios.post('http://35.209.21.140:8000/add_athlete', data);
       setMessage(response.data.success);
     } catch (error) {
       setMessage(error.response.data.error);
@@ -39,10 +43,6 @@ const AddAthlete = () => {
         <label>
           Sport Name:
           <input type="text" name="sport_name" value={athleteData.sport_name} onChange={handleChange} required />
-        </label>
-        <label>
-          Coach Name (optional):
-          <input type="text" name="coach_name" value={athleteData.coach_name} onChange={handleChange} />
         </label>
         <button type="submit">Add Athlete</button>
       </form>
