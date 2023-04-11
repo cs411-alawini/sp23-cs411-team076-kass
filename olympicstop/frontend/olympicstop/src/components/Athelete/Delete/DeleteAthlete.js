@@ -39,8 +39,8 @@ const DeleteAthlete = () => {
   
 
   return (
-    <div>
-      <h1>Delete Athlete</h1>
+    <div class ='delete-container'>
+      <h3>Delete Athlete</h3>
       <input
         type="text"
         value={searchTerm}

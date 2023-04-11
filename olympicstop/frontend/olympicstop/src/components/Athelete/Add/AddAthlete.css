@@ -1,0 +1,22 @@
+.add-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.add-container {
+    margin-top: 20px;
+}
+
+.add-input {
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+h3 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.add-header {
+   text-align: center;
+}

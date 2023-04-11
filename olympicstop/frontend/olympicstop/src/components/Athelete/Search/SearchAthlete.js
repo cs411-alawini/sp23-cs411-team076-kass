@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './SearchAthlete.css';
+import { useNavigate } from 'react-router-dom';
 
 const SearchAthlete = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
 
   const handleSearch = async () => {
     try {
@@ -16,15 +18,23 @@ const SearchAthlete = () => {
   };
 
   return (
-    <div>
-      <h1>Search Athlete</h1>
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Enter athlete's name"
-      />
-      <button onClick={handleSearch}>Search</button>
+    <>
+    <div class ='search-container'>
+      <div class = 'search-bar'>
+        <div class = 'search-input'>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Enter athlete's name"
+            class = 'input-box'
+          />
+          <button onClick={handleSearch}>Search</button>
+        </div>
+        <button onClick={() => navigate(`/add`)}>Add</button>
+        <button onClick={() => navigate(`/delete`)}>Delete</button>
+        <button onClick={() => navigate(`/filter`)}>Filter</button>
+      </div>
       {searchResults.length > 0 ? (
         <table>
           <thead>
@@ -52,6 +62,7 @@ const SearchAthlete = () => {
         </table> ) : ( <p>No results found</p>
       )}
     </div>
+    </>
   );
 };
 

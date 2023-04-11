@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './AddAthlete.css'
 
 const AddAthlete = () => {
   const [athleteData, setAthleteData] = useState({
@@ -29,20 +30,24 @@ const AddAthlete = () => {
   };
 
   return (
-    <div>
-      <h1>Add Athlete</h1>
-      <form onSubmit={handleSubmit}>
+    <div class = 'add-container'>
+      <div class = 'add-header'>
+      <h3>Add Athlete</h3>
+      </div>
+      <form onSubmit={handleSubmit} class = 'add-form'>
         <label>
           Name:
-          <input type="text" name="name" value={athleteData.name} onChange={handleChange} required />
+          <input class = 'add-input' type="text" name="name" value={athleteData.name} onChange={handleChange} required />
         </label>
+        <br></br>
         <label>
           Country Name:
-          <input type="text" name="country_name" value={athleteData.country_name} onChange={handleChange} required />
+          <input class = 'add-input' type="text" name="country_name" value={athleteData.country_name} onChange={handleChange} required />
         </label>
+        <br></br>
         <label>
           Sport Name:
-          <input type="text" name="sport_name" value={athleteData.sport_name} onChange={handleChange} required />
+          <input class = 'add-input' type="text" name="sport_name" value={athleteData.sport_name} onChange={handleChange} required />
         </label>
         <button type="submit">Add Athlete</button>
       </form>

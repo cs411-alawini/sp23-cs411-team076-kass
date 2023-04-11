@@ -1,0 +1,36 @@
+.medal-table {
+    margin-top: 10px;
+    font-size: small;
+    width: 70vw;
+}
+
+.medal-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.update-button {
+    width: 200px;
+}
+
+.item-div {
+    display: flex;
+    justify-content: center;
+}
+
+.update-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+h3 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.update-input {
+    width: 250px;
+}

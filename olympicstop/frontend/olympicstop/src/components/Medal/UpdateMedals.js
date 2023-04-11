@@ -51,13 +51,17 @@ const UpdateMedals = () => {
   );
 
   return (
-    <div>
-      <h1>Update Medal Count</h1>
+    <div class = 'update-container'>
+      <div class = 'item-div'>
+      <h3>Update Medal Count</h3>
+      </div>
+      <div class = 'item-div'>
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search for a country"
+        class = 'update-input'
       />
       <ul>
         {filteredCountries.map((country, index) => (
@@ -81,6 +85,7 @@ const UpdateMedals = () => {
           <button onClick={handleUpdate}>Update Medals</button>
         </div>
       )}
+      </div>
     </div>
   );
 };
