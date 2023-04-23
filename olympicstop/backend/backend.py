@@ -260,6 +260,28 @@ def drop_trigger():
     dropping_trigger(conn)
     return jsonify({"success": "Trigger dropped successfully"})
 
+@app.route("/ranking1")
+def get_ranking1():
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT TRIM(Country.NAME), SUM(Medals.TOTAL)
+        FROM Country
+        JOIN Medals ON Country.ID = Medals.COUNTRYID
+        JOIN Plays ON Medals.COUNTRYID = Plays.ATHLETEID
+        JOIN Sport ON Plays.SPORTID = Sport.ID
+        GROUP BY Country.NAME
+        ORDER BY SUM(Medals.TOTAL) DESC
+    ''')
+    results = cursor.fetchall()
+    ranking1 = []
+    for result in results:
+        ranking1.append({
+            "country": result[0].rstrip('\r'),
+            "total": result[1]
+        })
+    response = {"ranking1": ranking1}
+    cursor.close()
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
