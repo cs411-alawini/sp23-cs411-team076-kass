@@ -194,9 +194,9 @@ def update_medals():
         return jsonify({"error": f"Country '{country}' not found"}), 404
     updated_rows = cursor.execute("""
         UPDATE Medals
-        SET GOLD = %s, SILVER = %s, BRONZE = %s, TOTAL = %s
+        SET GOLD = %s, SILVER = %s, BRONZE = %s
         WHERE COUNTRYID = %s
-    """, (gold, silver, bronze, gold + silver + bronze, country_id[0]))
+    """, (gold, silver, bronze, country_id[0]))
     conn.commit()
     cursor.close()
     if updated_rows > 0:
