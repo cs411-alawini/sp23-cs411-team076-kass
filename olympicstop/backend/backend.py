@@ -233,7 +233,7 @@ def get_ranking():
 def adding_trigger(conn):
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TRIGGER UpdateTotal AFTER UPDATE ON Medals
+        CREATE TRIGGER UpdateTotal BEFORE UPDATE ON Medals
         FOR EACH ROW
         BEGIN
           UPDATE Medals
