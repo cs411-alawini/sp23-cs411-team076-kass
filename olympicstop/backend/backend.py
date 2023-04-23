@@ -236,9 +236,7 @@ def adding_trigger(conn):
         CREATE TRIGGER UpdateTotal BEFORE UPDATE ON Medals
         FOR EACH ROW
         BEGIN
-          UPDATE Medals
-          SET TOTAL = GOLD + SILVER + BRONZE
-          WHERE ID = NEW.ID;
+          SET NEW.TOTAL = NEW.GOLD + NEW.SILVER + NEW.BRONZE;
         END;
     ''')
     conn.commit()
