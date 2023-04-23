@@ -62,8 +62,8 @@ function MedalTable () {
       </div>
       <div className='item-div'>
         <LineChart
-          width={600}
-          height={300}
+          width={1000}
+          height={700}
           data={lineChartData}
           margin={{
             top: 5,
@@ -73,8 +73,8 @@ function MedalTable () {
           }}
         >
           <CartesianGrid strokeDasharray='3 3' />
-          <XAxis dataKey='country' />
-          <YAxis domain={[0, 250]} />
+          <XAxis dataKey='country' tick={false}/>
+          <YAxis domain={[0, 250]} tick={false}/>
           <Tooltip />
           <Legend />
           <Line
