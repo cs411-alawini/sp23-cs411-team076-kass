@@ -285,6 +285,21 @@ def create_stored_procedure():
         """)
     cursor.close()
 
+@app.route("/filtered_sports_participants")
+def get_filtered_sports_participants():
+    sport_name = request.args.get("sport", "")
+    country_name = request.args.get("country", "")
+    create_stored_procedure()
+    cursor = conn.cursor()
+    cursor.callproc("GetFilteredSportsParticipants", (sport_name, country_name))
+    results = cursor.fetchall()
+    sports_participants = [
+        {"sport": result[0], "country": result[1], "athlete": result[2]}
+        for result in results
+    ]
+    response = {"sports_participants": sports_participants}
+    cursor.close()
+    return jsonify(response)
 
 @app.route("/ranking1")
 def get_ranking1():
@@ -306,6 +321,18 @@ def get_ranking1():
             "total": result[1]
         })
     response = {"ranking1": ranking1}
+    cursor.close()
+    return jsonify(response)
+
+@app.route("/sports_and_countries")
+def get_sports_and_countries():
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT NAME FROM Sport;")
+    sports = [row[0] for row in cursor.fetchall()]
+    cursor.execute("SELECT DISTINCT NAME FROM Country;")
+    countries = [row[0] for row in cursor.fetchall()]
+
+    response = {"sports": sports, "countries": countries}
     cursor.close()
     return jsonify(response)
 

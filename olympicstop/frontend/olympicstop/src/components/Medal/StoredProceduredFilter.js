@@ -8,6 +8,8 @@ const StoredProceduredFilter = () => {
   const [selectedSport, setSelectedSport] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [loading, setLoading] = useState(true)
+  const [sports, setSports] = useState([])
+  const [countries, setCountries] = useState([])
 
   useEffect(() => {
     const fetchFilteredParticipants = async () => {
@@ -36,28 +38,20 @@ const StoredProceduredFilter = () => {
     fetchFilteredParticipants()
   }, [selectedSport, selectedCountry])
 
-  const sports = [
-    ...new Set(sportsParticipants.map(participant => participant.sport))
-  ]
-  const countries = [
-    ...new Set(sportsParticipants.map(participant => participant.country))
-  ]
-
   useEffect(() => {
-    const filterParticipants = () => {
-      let filtered = sportsParticipants.filter(participant => {
-        let sportMatch = !selectedSport || participant.sport === selectedSport
-        let countryMatch =
-          !selectedCountry || participant.country === selectedCountry
-        return sportMatch && countryMatch
-      })
-      setFilteredParticipants(filtered)
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          'http://35.209.21.140:8000/sports_and_countries'
+        )
+        setSports(response.data.sports)
+        setCountries(response.data.countries)
+      } catch (err) {
+        setError(err)
+      }
     }
-
-    if (!loading) {
-      filterParticipants()
-    }
-  }, [selectedSport, selectedCountry, sportsParticipants, loading])
+    fetchData()
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>
