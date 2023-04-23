@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import './Medals.css'
+
 function MedalTable() {
   const [ranking, setRanking] = useState([]);
   const [lineChartData, setLineChartData] = useState([]);
