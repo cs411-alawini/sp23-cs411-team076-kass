@@ -11,24 +11,30 @@ const StoredProceduredFilter = () => {
 
   useEffect(() => {
     const fetchFilteredParticipants = async () => {
-        setLoading(true);
+      setLoading(true)
+      if (selectedSport !== '' && selectedCountry !== '') {
         try {
-            const response = await axios.get('http://35.209.21.140:8000/filtered_sports_participants', {
-                params: {
-                    sport: selectedSport,
-                    country: selectedCountry,
-                },
-            });
-            setFilteredParticipants(response.data.sports_participants);
+          const response = await axios.get(
+            'http://35.209.21.140:8000/filtered_sports_participants',
+            {
+              params: {
+                sport: selectedSport,
+                country: selectedCountry
+              }
+            }
+          )
+          setFilteredParticipants(response.data.sports_participants)
         } catch (err) {
-            setError(err);
+          setError(err)
         }
-        setLoading(false);
-    };
+      } else {
+        setFilteredParticipants([])
+      }
+      setLoading(false)
+    }
 
-    fetchFilteredParticipants();
-}, [selectedSport, selectedCountry]);
-
+    fetchFilteredParticipants()
+  }, [selectedSport, selectedCountry])
 
   const sports = [
     ...new Set(sportsParticipants.map(participant => participant.sport))
