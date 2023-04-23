@@ -7,6 +7,7 @@ import SportsParticipants from './components/Medal/SportsParticipants';
 import AddAthlete from './components/Athelete/Add/AddAthlete';
 import DeleteAthlete from './components/Athelete/Delete/DeleteAthlete';
 import UpdateMedals from './components/Medal/UpdateMedals';
+import StoredProceduredFilter from './components/Medal/StoredProceduredFilter';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/delete" element={<DeleteAthlete/>} />
             <Route path="/update" element={<UpdateMedals/>} />
             <Route path="/filter" element={<SportsParticipants/>} />
+            <Route path="/stored" element={<StoredProceduredFilter/>} />
           </Route>
       </Routes>
     </Router>

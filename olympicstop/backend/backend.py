@@ -260,6 +260,32 @@ def drop_trigger():
     dropping_trigger(conn)
     return jsonify({"success": "Trigger dropped successfully"})
 
+def create_stored_procedure():
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM information_schema.routines
+        WHERE routine_schema = 'CS411' AND routine_name = 'GetFilteredSportsParticipants'
+    """)
+    stored_procedure_exists = cursor.fetchone()[0] > 0
+    if not stored_procedure_exists:
+        cursor.execute("""
+            CREATE PROCEDURE GetFilteredSportsParticipants(IN sport_name VARCHAR(100), IN country_name VARCHAR(100))
+            BEGIN
+                SELECT Sport.NAME as Sport, Country.NAME as Country, Athlete.NAME as Athlete
+                FROM Sport
+                JOIN Plays ON Sport.ID = Plays.SPORTID
+                INNER JOIN Athlete ON Plays.ATHLETEID = Athlete.ID
+                INNER JOIN Country ON Athlete.COUNTRYID = Country.ID
+                WHERE (Sport.NAME = sport_name OR sport_name = '')
+                  AND (Country.NAME = country_name OR country_name = '')
+                GROUP BY Sport.NAME, Country.NAME, Athlete.ID
+                ORDER BY Sport.NAME;
+            END
+        """)
+    cursor.close()
+
+
 @app.route("/ranking1")
 def get_ranking1():
     cursor = conn.cursor()
