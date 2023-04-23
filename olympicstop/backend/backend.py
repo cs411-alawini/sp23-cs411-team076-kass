@@ -236,7 +236,9 @@ def adding_trigger(conn):
         CREATE TRIGGER UpdateTotal BEFORE UPDATE ON Medals
         FOR EACH ROW
         BEGIN
-          SET NEW.TOTAL = NEW.GOLD + NEW.SILVER + NEW.BRONZE;
+          IF (NEW.GOLD <> OLD.GOLD) OR (NEW.SILVER <> OLD.SILVER) OR (NEW.BRONZE <> OLD.BRONZE) THEN
+            SET NEW.TOTAL = NEW.GOLD + NEW.SILVER + NEW.BRONZE;
+          END IF;
         END;
     ''')
     conn.commit()
