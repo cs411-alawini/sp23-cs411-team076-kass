@@ -230,5 +230,36 @@ def get_ranking():
     cursor.close()
     return jsonify(response)
 
+def adding_trigger(conn):
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TRIGGER UpdateTotal AFTER UPDATE ON Medals
+        FOR EACH ROW
+        BEGIN
+          UPDATE Medals
+          SET TOTAL = GOLD + SILVER + BRONZE
+          WHERE ID = NEW.ID;
+        END;
+    ''')
+    conn.commit()
+    cursor.close()
+
+def dropping_trigger(conn):
+    cursor = conn.cursor()
+    cursor.execute('DROP TRIGGER IF EXISTS UpdateTotal;')
+    conn.commit()
+    cursor.close()
+
+@app.route("/add_trigger", methods=["POST"])
+def add_trigger():
+    adding_trigger(conn)
+    return jsonify({"success": "Adding trigger here"})
+
+@app.route("/drop_trigger", methods=["POST"])
+def drop_trigger():
+    dropping_trigger(conn)
+    return jsonify({"success": "Trigger dropped successfully"})
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
