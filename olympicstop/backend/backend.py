@@ -421,131 +421,115 @@ def get_sports_and_countries():
     cursor.close()
     return jsonify(response)
 
-
 def create_stored_procedures():
     cursor = conn.cursor()
-    try:
-        cursor.execute(
-            """
-            SELECT COUNT(*)
-            FROM information_schema.routines
-            WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerSport'
-        """
-        )
-        sp_exists = cursor.fetchone()[0] > 0
-        if not sp_exists:
-            cursor.execute(
-                """
-                CREATE PROCEDURE GetTotalAthletesPerSport(OUT result JSON)
-                BEGIN
-                    DECLARE done INT DEFAULT FALSE;
-                    DECLARE sport_name VARCHAR(100);
-                    DECLARE athlete_count INT;
-                    DECLARE cur CURSOR FOR
-                        SELECT s.NAME as Sport, COUNT(a.ID) as AthleteCount
-                        FROM Sport s
-                        LEFT JOIN Plays p ON s.ID = p.SPORTID
-                        LEFT JOIN Athlete a ON p.ATHLETEID = a.ID
-                        WHERE a.ID IN (
-                            SELECT Athlete.ID
-                            FROM Athlete
-                        )
-                        GROUP BY s.NAME
-                        ORDER BY s.NAME;
-                    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-                    
-                    SET result = JSON_ARRAY();
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM information_schema.routines
+        WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerSport'
+    """)
+    sp_exists = cursor.fetchone()[0] > 0
+    if not sp_exists:
+        cursor.execute("""
+            CREATE PROCEDURE GetTotalAthletesPerSport()
+            BEGIN
+                DECLARE done INT DEFAULT FALSE;
+                DECLARE sport_name VARCHAR(100);
+                DECLARE athlete_count INT;
+                DECLARE cur CURSOR FOR
+                    SELECT s.NAME as Sport, COUNT(a.ID) as AthleteCount
+                    FROM Sport s
+                    LEFT JOIN Plays p ON s.ID = p.SPORTID
+                    LEFT JOIN Athlete a ON p.ATHLETEID = a.ID
+                    WHERE a.ID IN (
+                        SELECT Athlete.ID
+                        FROM Athlete
+                    )
+                    GROUP BY s.NAME
+                    ORDER BY s.NAME;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
-                    OPEN cur;
-                    read_loop: LOOP
-                        FETCH cur INTO sport_name, athlete_count;
+                OPEN cur;
+                read_loop: LOOP
+                    FETCH cur INTO sport_name, athlete_count;
 
-                        IF done THEN
-                            LEAVE read_loop;
-                        END IF;
-                        
-                        SET result = JSON_ARRAY_APPEND(result, '$', JSON_OBJECT('sport', sport_name, 'athlete_count', athlete_count));
-                    END LOOP;
-                    CLOSE cur;
-                END
-            """
-            )
-        cursor.execute(
-            """
-            SELECT COUNT(*)
-            FROM information_schema.routines
-            WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerCountry'
-        """
-        )
-        sp_exists = cursor.fetchone()[0] > 0
-        if not sp_exists:
-            cursor.execute(
-                """
-                CREATE PROCEDURE GetTotalAthletesPerCountry(OUT result JSON)
-                BEGIN
-                    DECLARE done INT DEFAULT FALSE;
-                    DECLARE country_name VARCHAR(100);
-                    DECLARE athlete_count INT;
-                    DECLARE cur CURSOR FOR
-                        SELECT c.NAME as Country, COUNT(a.ID) as AthleteCount
-                        FROM Country c
-                        LEFT JOIN Athlete a ON a.COUNTRYID = c.ID
-                        WHERE a.ID IN (
-                            SELECT Athlete.ID
-                            FROM Athlete
-                        )
-                        GROUP BY c.NAME
-                        ORDER BY c.NAME;
-                    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-                    
-                    SET result = JSON_ARRAY();
+                    IF done THEN
+                        LEAVE read_loop;
+                    END IF;
 
-                    OPEN cur;
-                    read_loop: LOOP
-                        FETCH cur INTO country_name, athlete_count;
+                    SELECT sport_name, athlete_count;
+                END LOOP;
+                CLOSE cur;
+            END
+        """)
 
-                        IF done THEN
-                            LEAVE read_loop;
-                        END IF;
-                        
-                        SET result = JSON_ARRAY_APPEND(result, '$', JSON_OBJECT('country', country_name, 'athlete_count', athlete_count));
-                    END LOOP;
-                    CLOSE cur;
-                END
-            """
-            )
-    except Exception as e:
-        print(f"Error creating stored procedures: {e}")
-    finally:
-        cursor.close()
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM information_schema.routines
+        WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerCountry'
+    """)
+    sp_exists = cursor.fetchone()[0] > 0
+    if not sp_exists:
+        cursor.execute("""
+            CREATE PROCEDURE GetTotalAthletesPerCountry()
+            BEGIN
+                DECLARE done INT DEFAULT FALSE;
+                DECLARE country_name VARCHAR(100);
+                DECLARE athlete_count INT;
+                DECLARE cur CURSOR FOR
+                    SELECT c.NAME as Country, COUNT(a.ID) as AthleteCount
+                    FROM Country c
+                    LEFT JOIN Athlete a ON a.COUNTRYID = c.ID
+                    WHERE a.ID IN (
+                        SELECT Athlete.ID
+                        FROM Athlete
+                    )
+                    GROUP BY c.NAME
+                    ORDER BY c.NAME;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
+                OPEN cur;
+                read_loop: LOOP
+                    FETCH cur INTO country_name, athlete_count;
+
+                    IF done THEN
+                        LEAVE read_loop;
+                    END IF;
+
+                    SELECT country_name, athlete_count;
+                END LOOP;
+                CLOSE cur;
+            END
+        """)
+
+    cursor.close()
 
 @app.route("/total_athletes_per_country")
 def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerCountry")
-    results = cursor.fetchall()
+    result_cursor = cursor.stored_results().fetchall()
     athletes_per_country = [
-        {"country": result[0], "athlete_count": result[1]} for result in results
+        {"country": result[0], "athlete_count": result[1]} for result in result_cursor
     ]
     response = {"athletes_per_country": athletes_per_country}
     cursor.close()
     return jsonify(response)
-
 
 @app.route("/total_athletes_per_sport")
 def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerSport")
-    results = cursor.fetchall()
+    result_cursor = cursor.stored_results().fetchall()
     athletes_per_sport = [
-        {"sport": result[0], "athlete_count": result[1]} for result in results
+        {"sport": result[0], "athlete_count": result[1]} for result in result_cursor
     ]
     response = {"athletes_per_sport": athletes_per_sport}
     cursor.close()
     return jsonify(response)
+
 
 
 if __name__ == "__main__":
