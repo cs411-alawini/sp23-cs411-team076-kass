@@ -98,4 +98,4 @@ def update_graph(country_value, sport_value):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host="localhost", port=8051)
+    app.run_server(debug=True, host="35.209.21.140", port=8051)
