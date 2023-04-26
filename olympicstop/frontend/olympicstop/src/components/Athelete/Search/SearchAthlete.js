@@ -35,6 +35,7 @@ const SearchAthlete = () => {
         <button onClick={() => navigate(`/delete`)}>Delete</button>
         <button onClick={() => navigate(`/filter`)}>Filter</button>
         <button onClick={() => navigate(`/stored`)}>Stored</button>
+        <button onClick={() => navigate(`/sp2`)}>SP2</button>
       </div>
       {searchResults.length > 0 ? (
         <table>
