@@ -560,7 +560,8 @@ def get_schedule():
     cursor.execute("SELECT * FROM schedule")
     result = cursor.fetchall()
     schedule_stats = []
-    for x in schedule_stats:
+    for x in result:
+        print(x)
         schedule_stats.append(
             {
                 "ID": x[0],
