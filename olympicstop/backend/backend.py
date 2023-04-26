@@ -553,6 +553,13 @@ def get_total_athletes_per_sport():
     cursor.close()
     return jsonify(response)
 
+@app.route('/schedule', methods=['GET'])
+def get_schedule():
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM schedule')
+    result = cursor.fetchall()
+    cursor.close()
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
