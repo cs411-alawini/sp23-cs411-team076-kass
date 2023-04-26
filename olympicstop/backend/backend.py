@@ -561,7 +561,6 @@ def get_schedule():
     result = cursor.fetchall()
     schedule_stats = []
     for x in result:
-        print(x)
         schedule_stats.append(
             {
                 "ID": x[0],

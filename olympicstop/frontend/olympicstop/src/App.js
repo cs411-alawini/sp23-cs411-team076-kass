@@ -9,6 +9,7 @@ import DeleteAthlete from './components/Athelete/Delete/DeleteAthlete';
 import UpdateMedals from './components/Medal/UpdateMedals';
 import StoredProceduredFilter from './components/Medal/StoredProceduredFilter';
 import Bobba from './components/Athelete/Visuals/BubbleChart';
+import Schedule from './components/Medal/Schedule';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/update" element={<UpdateMedals/>} />
             <Route path="/filter" element={<SportsParticipants/>} />
             <Route path="/sp2" element={<Bobba/>} />
+            <Route path="/schedule" element={<Schedule/>} />
             <Route path="/stored" element={<StoredProceduredFilter/>} />
           </Route>
       </Routes>

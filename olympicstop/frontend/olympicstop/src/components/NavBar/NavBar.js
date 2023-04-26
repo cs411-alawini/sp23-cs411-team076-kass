@@ -30,6 +30,11 @@ function NavBar() {
             <MDBNavbarItem>
                 <Link to="/medals" className='nav-item-decor'>Medals</Link>
             </MDBNavbarItem>
+
+            <MDBNavbarItem>
+                <Link to="/schedule" className='nav-item-decor'>Schedule</Link>
+            </MDBNavbarItem>
+
           </div>
           </MDBNavbarNav>
         </MDBCollapse>
