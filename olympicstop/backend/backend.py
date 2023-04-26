@@ -435,7 +435,7 @@ def create_stored_procedures():
         if not sp_exists:
             cursor.execute(
                 """
-                CREATE PROCEDURE GetTotalAthletesPerSport()
+                CREATE PROCEDURE GetTotalAthletesPerSport(OUT result JSON)
                 BEGIN
                     DECLARE done INT DEFAULT FALSE;
                     DECLARE sport_name VARCHAR(100);
@@ -452,6 +452,8 @@ def create_stored_procedures():
                         GROUP BY s.NAME
                         ORDER BY s.NAME;
                     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+                    
+                    SET result = JSON_ARRAY();
 
                     OPEN cur;
                     read_loop: LOOP
@@ -460,6 +462,8 @@ def create_stored_procedures():
                         IF done THEN
                             LEAVE read_loop;
                         END IF;
+                        
+                        SET result = JSON_ARRAY_APPEND(result, '$', JSON_OBJECT('sport', sport_name, 'athlete_count', athlete_count));
                     END LOOP;
                     CLOSE cur;
                 END
@@ -476,7 +480,7 @@ def create_stored_procedures():
         if not sp_exists:
             cursor.execute(
                 """
-                CREATE PROCEDURE GetTotalAthletesPerCountry()
+                CREATE PROCEDURE GetTotalAthletesPerCountry(OUT result JSON)
                 BEGIN
                     DECLARE done INT DEFAULT FALSE;
                     DECLARE country_name VARCHAR(100);
@@ -492,6 +496,8 @@ def create_stored_procedures():
                         GROUP BY c.NAME
                         ORDER BY c.NAME;
                     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+                    
+                    SET result = JSON_ARRAY();
 
                     OPEN cur;
                     read_loop: LOOP
@@ -500,6 +506,8 @@ def create_stored_procedures():
                         IF done THEN
                             LEAVE read_loop;
                         END IF;
+                        
+                        SET result = JSON_ARRAY_APPEND(result, '$', JSON_OBJECT('country', country_name, 'athlete_count', athlete_count));
                     END LOOP;
                     CLOSE cur;
                 END
@@ -515,11 +523,8 @@ def create_stored_procedures():
 def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
-    cursor.callproc("GetTotalAthletesPerCountry")
-    results = cursor.fetchall()
-    athletes_per_country = [
-        {"country": result[0], "athlete_count": result[1]} for result in results
-    ]
+    result = cursor.callproc("GetTotalAthletesPerCountry", (None,))
+    athletes_per_country = json.loads(result[0])
     response = {"athletes_per_country": athletes_per_country}
     cursor.close()
     return jsonify(response)
@@ -529,11 +534,8 @@ def get_total_athletes_per_country():
 def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
-    cursor.callproc("GetTotalAthletesPerSport")
-    results = cursor.fetchall()
-    athletes_per_sport = [
-        {"sport": result[0], "athlete_count": result[1]} for result in results
-    ]
+    result = cursor.callproc("GetTotalAthletesPerSport", (None,))
+    athletes_per_sport = json.loads(result[0])
     response = {"athletes_per_sport": athletes_per_sport}
     cursor.close()
     return jsonify(response)
