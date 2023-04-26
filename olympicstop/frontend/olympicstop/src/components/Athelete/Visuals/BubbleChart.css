@@ -1,0 +1,13 @@
+.chart-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  
+  .tooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 3px;
+  }
