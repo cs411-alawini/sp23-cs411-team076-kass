@@ -63,6 +63,11 @@ const SearchAthlete = () => {
           </tbody>
         </table> ) : ( <p>No results found</p>
       )}
+      <iframe
+        src="http://localhost:8051"
+        title="Dash App"
+        style={{ width: "100%", height: "600px", border: "none" }}>
+        </iframe>
     </div>
     </>
   );
