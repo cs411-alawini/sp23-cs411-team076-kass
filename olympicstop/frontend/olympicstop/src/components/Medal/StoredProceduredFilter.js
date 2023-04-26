@@ -106,13 +106,21 @@ const StoredProceduredFilter = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredParticipants.map((participant, index) => (
-              <tr key={index}>
-                <td>{participant.sport}</td>
-                <td>{participant.country}</td>
-                <td>{participant.athlete}</td>
+            {filteredParticipants.length === 0 ? (
+              <tr>
+                <td colSpan='3'>
+                  No player available for the selected sport and country
+                </td>
               </tr>
-            ))}
+            ) : (
+              filteredParticipants.map((participant, index) => (
+                <tr key={index}>
+                  <td>{participant.sport}</td>
+                  <td>{participant.country}</td>
+                  <td>{participant.athlete}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       )}
