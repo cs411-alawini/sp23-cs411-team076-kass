@@ -26,7 +26,7 @@ const BubbleChart = ({ apiEndpoint }) => {
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
-    const pack = d3.pack().size([width, height]).padding(1.5)
+    const pack = d3.pack().size([width, height]).padding(1)
 
     const root = d3
       .hierarchy({ children: data })
