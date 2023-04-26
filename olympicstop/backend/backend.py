@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 import pymysql
 from flask_cors import CORS
+import json
 from google.cloud.sql.connector import Connector
 
 connector = Connector()
@@ -523,7 +524,7 @@ def create_stored_procedures():
 def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
-    result = cursor.callproc("GetTotalAthletesPerCountry", (None,))
+    result = cursor.callproc("GetTotalAthletesPerCountry")
     athletes_per_country = json.loads(result[0])
     response = {"athletes_per_country": athletes_per_country}
     cursor.close()
@@ -534,7 +535,7 @@ def get_total_athletes_per_country():
 def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
-    result = cursor.callproc("GetTotalAthletesPerSport", (None,))
+    result = cursor.callproc("GetTotalAthletesPerSport")
     athletes_per_sport = json.loads(result[0])
     response = {"athletes_per_sport": athletes_per_sport}
     cursor.close()
