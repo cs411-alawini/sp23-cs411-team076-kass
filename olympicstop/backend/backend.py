@@ -292,7 +292,6 @@ def get_ranking():
 
 def adding_trigger(conn):
     cursor = conn.cursor()
-    cursor.execute("DELIMITER $$")
     cursor.execute(
         """
         CREATE TRIGGER UpdateTotal BEFORE UPDATE ON Medals
@@ -301,13 +300,11 @@ def adding_trigger(conn):
           IF (NEW.GOLD <> OLD.GOLD) OR (NEW.SILVER <> OLD.SILVER) OR (NEW.BRONZE <> OLD.BRONZE) THEN
             SET NEW.TOTAL = NEW.GOLD + NEW.SILVER + NEW.BRONZE;
           END IF;
-        END $$
-    """
+        END;
+        """
     )
-    cursor.execute("DELIMITER ;")
     conn.commit()
     cursor.close()
-
 
 
 def dropping_trigger(conn):
