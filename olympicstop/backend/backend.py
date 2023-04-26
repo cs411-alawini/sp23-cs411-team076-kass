@@ -509,7 +509,7 @@ def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerCountry")
-    result_cursor = cursor.stored_results().fetchall()
+    result_cursor = cursor.fetchall()
     athletes_per_country = [
         {"country": result[0], "athlete_count": result[1]} for result in result_cursor
     ]
@@ -522,7 +522,7 @@ def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerSport")
-    result_cursor = cursor.stored_results().fetchall()
+    result_cursor = cursor.fetchall()
     athletes_per_sport = [
         {"sport": result[0], "athlete_count": result[1]} for result in result_cursor
     ]
