@@ -421,16 +421,20 @@ def get_sports_and_countries():
     cursor.close()
     return jsonify(response)
 
+
 def create_stored_procedures():
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*)
         FROM information_schema.routines
         WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerSport'
-    """)
+    """
+    )
     sp_exists = cursor.fetchone()[0] > 0
     if not sp_exists:
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE PROCEDURE GetTotalAthletesPerSport()
             BEGIN
                 DECLARE done INT DEFAULT FALSE;
@@ -461,16 +465,20 @@ def create_stored_procedures():
                 END LOOP;
                 CLOSE cur;
             END
-        """)
+        """
+        )
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*)
         FROM information_schema.routines
         WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerCountry'
-    """)
+    """
+    )
     sp_exists = cursor.fetchone()[0] > 0
     if not sp_exists:
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE PROCEDURE GetTotalAthletesPerCountry()
             BEGIN
                 DECLARE done INT DEFAULT FALSE;
@@ -500,36 +508,50 @@ def create_stored_procedures():
                 END LOOP;
                 CLOSE cur;
             END
-        """)
+        """
+        )
 
     cursor.close()
+
 
 @app.route("/total_athletes_per_country")
 def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerCountry")
-    result_cursor = cursor.fetchall()
-    athletes_per_country = [
-        {"country": result[0], "athlete_count": result[1]} for result in result_cursor
-    ]
+    athletes_per_country = []
+    while True:
+        result = cursor.fetchone()
+        if result:
+            athletes_per_country.append(
+                {"country": result[0], "athlete_count": result[1]}
+            )
+        elif cursor.nextset():
+            continue
+        else:
+            break
     response = {"athletes_per_country": athletes_per_country}
     cursor.close()
     return jsonify(response)
+
 
 @app.route("/total_athletes_per_sport")
 def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
     cursor.callproc("GetTotalAthletesPerSport")
-    result_cursor = cursor.fetchall()
-    athletes_per_sport = [
-        {"sport": result[0], "athlete_count": result[1]} for result in result_cursor
-    ]
+    athletes_per_sport = []
+    while True:
+        result = cursor.fetchone()
+        if result:
+            athletes_per_sport.append({"sport": result[0], "athlete_count": result[1]})
+        elif cursor.nextset():
+            continue
+        else:
+            break
     response = {"athletes_per_sport": athletes_per_sport}
     cursor.close()
     return jsonify(response)
-
 
 
 if __name__ == "__main__":
