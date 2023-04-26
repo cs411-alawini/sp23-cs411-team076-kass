@@ -15,7 +15,7 @@ const BubbleChart = ({ apiEndpoint }) => {
   }
 
   const drawBubbleChart = data => {
-    const width = 800
+    const width = 600
     const height = 600
     const margin = { top: 20, right: 20, bottom: 20, left: 20 }
 
