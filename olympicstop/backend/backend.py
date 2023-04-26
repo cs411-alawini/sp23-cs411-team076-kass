@@ -9,39 +9,46 @@ conn: pymysql.connections.Connection = connector.connect(
     "pymysql",
     user="root",
     password="KASS1234",
-    db="CS411"
+    db="CS411",
 )
 
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route("/medalstats")
 def medal_stats():
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT TRIM(Country.NAME), SUM(Medals.GOLD), SUM(Medals.SILVER), SUM(Medals.BRONZE)
         FROM Country
         JOIN Medals ON Country.ID = Medals.COUNTRYID
         GROUP BY Country.NAME
         ORDER BY SUM(Medals.GOLD + Medals.SILVER + Medals.BRONZE) DESC;
-    ''')
+    """
+    )
     results = cursor.fetchall()
     medal_stats = []
     for result in results:
-        medal_stats.append({
-            "country": result[0],
-            "gold": result[1],
-            "silver": result[2],
-            "bronze": result[3],
-        })
+        medal_stats.append(
+            {
+                "country": result[0],
+                "gold": result[1],
+                "silver": result[2],
+                "bronze": result[3],
+            }
+        )
     response = {"medal_stats": medal_stats}
     cursor.close()
     return jsonify(response)
 
+
 @app.route("/sports_participants")
 def get_sports_participants():
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT Sport.NAME as Sport, Country.NAME as Country, Athlete.NAME as Athlete
         FROM Sport
         JOIN Plays ON Sport.ID = Plays.SPORTID
@@ -49,27 +56,32 @@ def get_sports_participants():
         INNER JOIN Country ON Athlete.COUNTRYID = Country.ID
         GROUP BY Sport.NAME, Country.NAME, Athlete.ID
         ORDER BY Sport.NAME;
-    ''')
+    """
+    )
     results = cursor.fetchall()
     sports_participants = []
     for result in results:
-        sports_participants.append({
-            "sport": result[0],
-            "country": result[1],
-            "athlete": result[2]
-        })
+        sports_participants.append(
+            {"sport": result[0], "country": result[1], "athlete": result[2]}
+        )
     response = {"sports_participants": sports_participants}
     cursor.close()
     return jsonify(response)
 
+
 @app.route("/add_athlete", methods=["POST"])
 def add_athlete():
     data = request.get_json()
-    if not data or "name" not in data or "country_name" not in data or "sport_name" not in data:
+    if (
+        not data
+        or "name" not in data
+        or "country_name" not in data
+        or "sport_name" not in data
+    ):
         return jsonify({"error": "Required fields are missing"}), 400
     name = data["name"].strip()
     country_name = data["country_name"].strip()
-    coach_name = data.get("coach_name")  # Optional 
+    coach_name = data.get("coach_name")  # Optional
     sport_name = data["sport_name"].strip()
     cursor = conn.cursor()
     cursor.execute("SELECT ID FROM Country WHERE TRIM(NAME) = %s", (country_name,))
@@ -91,19 +103,30 @@ def add_athlete():
             return jsonify({"error": f"Invalid coach_name '{coach_name}'"}), 404
     else:
         coach_id = None
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO Athlete (NAME, COUNTRYID, COACHID)
         VALUES (%s, %s, %s)
-    """, (name, country_id[0], coach_id[0] if coach_id else None))
+    """,
+        (name, country_id[0], coach_id[0] if coach_id else None),
+    )
     cursor.execute("SELECT LAST_INSERT_ID()")
     athlete_id = cursor.fetchone()[0]
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO Plays (ATHLETEID, SPORTID)
         VALUES (%s, %s)
-    """, (athlete_id, sport_id[0]))
+    """,
+        (athlete_id, sport_id[0]),
+    )
     conn.commit()
     cursor.close()
-    return jsonify({"success": f"Athlete '{name}' has been added and linked to sport '{sport_name}'"})
+    return jsonify(
+        {
+            "success": f"Athlete '{name}' has been added and linked to sport '{sport_name}'"
+        }
+    )
+
 
 @app.route("/delete_athlete", methods=["DELETE"])
 def delete_athlete():
@@ -114,19 +137,30 @@ def delete_athlete():
     cursor = conn.cursor()
     delete_condition = "ID = %s"
     delete_params = (athlete_id,)
-    cursor.execute(f"DELETE FROM Plays WHERE ATHLETEID IN (SELECT ID FROM Athlete WHERE {delete_condition})", delete_params)
-    deleted_rows = cursor.execute(f"DELETE FROM Athlete WHERE {delete_condition}", delete_params)
+    cursor.execute(
+        f"DELETE FROM Plays WHERE ATHLETEID IN (SELECT ID FROM Athlete WHERE {delete_condition})",
+        delete_params,
+    )
+    deleted_rows = cursor.execute(
+        f"DELETE FROM Athlete WHERE {delete_condition}", delete_params
+    )
     conn.commit()
     cursor.close()
     if deleted_rows > 0:
-        return jsonify({"success": f"Athlete with ID {athlete_id} and associated records have been deleted"})
+        return jsonify(
+            {
+                "success": f"Athlete with ID {athlete_id} and associated records have been deleted"
+            }
+        )
     else:
         return jsonify({"error": f"No athlete found with ID {athlete_id}"}), 404
+
 
 @app.route("/search_athlete/<string:search_term>")
 def search_athlete(search_term):
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT Athlete.NAME as Athlete, Sport.NAME as Sport, Country.NAME as Country, Coach.NAME as Coach
         FROM Athlete
         JOIN Plays ON Athlete.ID = Plays.ATHLETEID
@@ -135,24 +169,30 @@ def search_athlete(search_term):
         LEFT JOIN Coach ON Athlete.COACHID = Coach.ID
         WHERE Athlete.NAME LIKE %s
         ORDER BY Athlete.NAME;
-    ''', ('%' + search_term + '%',))
+    """,
+        ("%" + search_term + "%",),
+    )
     results = cursor.fetchall()
     search_results = []
     for result in results:
-        search_results.append({
-            "athlete": result[0],
-            "sport": result[1],
-            "country": result[2],
-            "coach": result[3] if result[3] else None
-        })
+        search_results.append(
+            {
+                "athlete": result[0],
+                "sport": result[1],
+                "country": result[2],
+                "coach": result[3] if result[3] else None,
+            }
+        )
     response = {"search_results": search_results}
     cursor.close()
     return jsonify(response)
 
+
 @app.route("/search_athlete1/<string:search_term>")
 def search_athlete1(search_term):
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT Athlete.ID as AthleteID, Athlete.NAME as Athlete, Sport.NAME as Sport, Country.NAME as Country, Coach.NAME as Coach
         FROM Athlete
         JOIN Plays ON Athlete.ID = Plays.ATHLETEID
@@ -161,17 +201,21 @@ def search_athlete1(search_term):
         LEFT JOIN Coach ON Athlete.COACHID = Coach.ID
         WHERE Athlete.NAME LIKE %s
         ORDER BY Athlete.NAME;
-    ''', ('%' + search_term + '%',))
+    """,
+        ("%" + search_term + "%",),
+    )
     results = cursor.fetchall()
     search_results = []
     for result in results:
-        search_results.append({
-            "id": result[0],
-            "athlete": result[1],
-            "sport": result[2],
-            "country": result[3],
-            "coach": result[4] if result[4] else None
-        })
+        search_results.append(
+            {
+                "id": result[0],
+                "athlete": result[1],
+                "sport": result[2],
+                "country": result[3],
+                "coach": result[4] if result[4] else None,
+            }
+        )
     response = {"search_results": search_results}
     cursor.close()
     return jsonify(response)
@@ -180,9 +224,15 @@ def search_athlete1(search_term):
 @app.route("/update_medals", methods=["POST"])
 def update_medals():
     data = request.get_json()
-    if not data or "country" not in data or "gold" not in data or "silver" not in data or "bronze" not in data:
+    if (
+        not data
+        or "country" not in data
+        or "gold" not in data
+        or "silver" not in data
+        or "bronze" not in data
+    ):
         return jsonify({"error": "Required fields are missing"}), 400
-    country = data["country"].rstrip('\r').strip()
+    country = data["country"].rstrip("\r").strip()
     gold = int(data["gold"])
     silver = int(data["silver"])
     bronze = int(data["bronze"])
@@ -192,11 +242,14 @@ def update_medals():
     if not country_id:
         cursor.close()
         return jsonify({"error": f"Country '{country}' not found"}), 404
-    updated_rows = cursor.execute("""
+    updated_rows = cursor.execute(
+        """
         UPDATE Medals
         SET GOLD = %s, SILVER = %s, BRONZE = %s
         WHERE COUNTRYID = %s
-    """, (gold, silver, bronze, country_id[0]))
+    """,
+        (gold, silver, bronze, country_id[0]),
+    )
     conn.commit()
     cursor.close()
     if updated_rows > 0:
@@ -204,10 +257,12 @@ def update_medals():
     else:
         return jsonify({"error": f"No changes made for '{country}'"}), 400
 
+
 @app.route("/ranking")
 def get_ranking():
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT TRIM(Country.NAME), SUM(Medals.GOLD), SUM(Medals.SILVER), SUM(Medals.BRONZE)
         FROM Country
         JOIN Medals ON Country.ID = Medals.COUNTRYID
@@ -216,23 +271,28 @@ def get_ranking():
         GROUP BY Country.NAME
         ORDER BY SUM(Medals.TOTAL) DESC
         LIMIT 15
-    ''')
+    """
+    )
     results = cursor.fetchall()
     ranking = []
     for result in results:
-        ranking.append({
-            "country": result[0].rstrip('\r'),
-            "gold": result[1],
-            "silver": result[2],
-            "bronze": result[3]
-        })
+        ranking.append(
+            {
+                "country": result[0].rstrip("\r"),
+                "gold": result[1],
+                "silver": result[2],
+                "bronze": result[3],
+            }
+        )
     response = {"ranking": ranking}
     cursor.close()
     return jsonify(response)
 
+
 def adding_trigger(conn):
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         CREATE TRIGGER UpdateTotal BEFORE UPDATE ON Medals
         FOR EACH ROW
         BEGIN
@@ -240,36 +300,44 @@ def adding_trigger(conn):
             SET NEW.TOTAL = NEW.GOLD + NEW.SILVER + NEW.BRONZE;
           END IF;
         END;
-    ''')
+    """
+    )
     conn.commit()
     cursor.close()
 
+
 def dropping_trigger(conn):
     cursor = conn.cursor()
-    cursor.execute('DROP TRIGGER IF EXISTS UpdateTotal;')
+    cursor.execute("DROP TRIGGER IF EXISTS UpdateTotal;")
     conn.commit()
     cursor.close()
+
 
 @app.route("/add_trigger", methods=["POST"])
 def add_trigger():
     adding_trigger(conn)
     return jsonify({"success": "Adding trigger here"})
 
+
 @app.route("/drop_trigger", methods=["POST"])
 def drop_trigger():
     dropping_trigger(conn)
     return jsonify({"success": "Trigger dropped successfully"})
 
+
 def create_stored_procedure():
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*)
         FROM information_schema.routines
         WHERE routine_schema = 'CS411' AND routine_name = 'GetFilteredSportsParticipants'
-    """)
+    """
+    )
     stored_procedure_exists = cursor.fetchone()[0] > 0
     if not stored_procedure_exists:
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE PROCEDURE GetFilteredSportsParticipants(IN sport_name VARCHAR(100), IN country_name VARCHAR(100))
             BEGIN
                 DECLARE done INT DEFAULT FALSE;
@@ -295,7 +363,8 @@ def create_stored_procedure():
                 END LOOP;
                 CLOSE cur;
             END
-        """)
+        """
+        )
     cursor.close()
 
 
@@ -319,7 +388,8 @@ def get_filtered_sports_participants():
 @app.route("/ranking1")
 def get_ranking1():
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute(
+        """
         SELECT TRIM(Country.NAME), SUM(Medals.TOTAL)
         FROM Country
         JOIN Medals ON Country.ID = Medals.COUNTRYID
@@ -327,17 +397,16 @@ def get_ranking1():
         JOIN Sport ON Plays.SPORTID = Sport.ID
         GROUP BY Country.NAME
         ORDER BY SUM(Medals.TOTAL) DESC
-    ''')
+    """
+    )
     results = cursor.fetchall()
     ranking1 = []
     for result in results:
-        ranking1.append({
-            "country": result[0].rstrip('\r'),
-            "total": result[1]
-        })
+        ranking1.append({"country": result[0].rstrip("\r"), "total": result[1]})
     response = {"ranking1": ranking1}
     cursor.close()
     return jsonify(response)
+
 
 @app.route("/sports_and_countries")
 def get_sports_and_countries():
@@ -351,5 +420,120 @@ def get_sports_and_countries():
     cursor.close()
     return jsonify(response)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+
+def create_stored_procedures():
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM information_schema.routines
+        WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerSport'
+    """
+    )
+    sp_exists = cursor.fetchone()[0] > 0
+    if not sp_exists:
+        cursor.execute(
+            """
+            CREATE PROCEDURE GetTotalAthletesPerSport()
+            BEGIN
+                DECLARE done INT DEFAULT FALSE;
+                DECLARE sport_name VARCHAR(100);
+                DECLARE athlete_count INT;
+                DECLARE cur CURSOR FOR
+                    SELECT s.NAME as Sport, COUNT(a.ID) as AthleteCount
+                    FROM Sport s
+                    LEFT JOIN Plays p ON s.ID = p.SPORTID
+                    LEFT JOIN Athlete a ON p.ATHLETEID = a.ID
+                    WHERE a.ID IN (
+                        SELECT Athlete.ID
+                        FROM Athlete
+                    )
+                    GROUP BY s.NAME
+                    ORDER BY s.NAME;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+                OPEN cur;
+                read_loop: LOOP
+                    FETCH cur INTO sport_name, athlete_count;
+
+                    IF done THEN
+                        LEAVE read_loop;
+                    END IF;
+                END LOOP;
+                CLOSE cur;
+            END
+        """
+        )
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM information_schema.routines
+        WHERE routine_schema = 'CS411' AND routine_name = 'GetTotalAthletesPerCountry'
+    """
+    )
+    sp_exists = cursor.fetchone()[0] > 0
+    if not sp_exists:
+        cursor.execute(
+            """
+            CREATE PROCEDURE GetTotalAthletesPerCountry()
+            BEGIN
+                DECLARE done INT DEFAULT FALSE;
+                DECLARE country_name VARCHAR(100);
+                DECLARE athlete_count INT;
+                DECLARE cur CURSOR FOR
+                    SELECT c.NAME as Country, COUNT(a.ID) as AthleteCount
+                    FROM Country c
+                    LEFT JOIN Athlete a ON a.COUNTRYID = c.ID
+                    WHERE a.ID IN (
+                        SELECT Athlete.ID
+                        FROM Athlete
+                    )
+                    GROUP BY c.NAME
+                    ORDER BY c.NAME;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+                OPEN cur;
+                read_loop: LOOP
+                    FETCH cur INTO country_name, athlete_count;
+
+                    IF done THEN
+                        LEAVE read_loop;
+                    END IF;
+                END LOOP;
+                CLOSE cur;
+            END
+        """
+        )
+    cursor.close()
+
+
+@app.route("/total_athletes_per_country")
+def get_total_athletes_per_country():
+    create_stored_procedures()
+    cursor = conn.cursor()
+    cursor.callproc("GetTotalAthletesPerCountry")
+    results = cursor.fetchall()
+    athletes_per_country = [
+        {"country": result[0], "athlete_count": result[1]} for result in results
+    ]
+    response = {"athletes_per_country": athletes_per_country}
+    cursor.close()
+    return jsonify(response)
+
+
+@app.route("/total_athletes_per_sport")
+def get_total_athletes_per_sport():
+    create_stored_procedures()
+    cursor = conn.cursor()
+    cursor.callproc("GetTotalAthletesPerSport")
+    results = cursor.fetchall()
+    athletes_per_sport = [
+        {"sport": result[0], "athlete_count": result[1]} for result in results
+    ]
+    response = {"athletes_per_sport": athletes_per_sport}
+    cursor.close()
+    return jsonify(response)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
