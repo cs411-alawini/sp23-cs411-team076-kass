@@ -524,8 +524,11 @@ def create_stored_procedures():
 def get_total_athletes_per_country():
     create_stored_procedures()
     cursor = conn.cursor()
-    result = cursor.callproc("GetTotalAthletesPerCountry")
-    athletes_per_country = json.loads(result[0])
+    cursor.callproc("GetTotalAthletesPerCountry")
+    results = cursor.fetchall()
+    athletes_per_country = [
+        {"country": result[0], "athlete_count": result[1]} for result in results
+    ]
     response = {"athletes_per_country": athletes_per_country}
     cursor.close()
     return jsonify(response)
@@ -535,8 +538,11 @@ def get_total_athletes_per_country():
 def get_total_athletes_per_sport():
     create_stored_procedures()
     cursor = conn.cursor()
-    result = cursor.callproc("GetTotalAthletesPerSport")
-    athletes_per_sport = json.loads(result[0])
+    cursor.callproc("GetTotalAthletesPerSport")
+    results = cursor.fetchall()
+    athletes_per_sport = [
+        {"sport": result[0], "athlete_count": result[1]} for result in results
+    ]
     response = {"athletes_per_sport": athletes_per_sport}
     cursor.close()
     return jsonify(response)
