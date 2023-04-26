@@ -312,8 +312,6 @@ def create_stored_procedure():
 
                 SELECT * FROM temp_result;
 
-                DROP TEMPORARY TABLE IF EXISTS temp_result;
-
             END
         """)
     cursor.close()
@@ -325,7 +323,14 @@ def get_filtered_sports_participants():
     create_stored_procedure()
     cursor = conn.cursor()
     cursor.callproc("GetFilteredSportsParticipants", (sport_name, country_name))
+    
+    # Fetch the results from the temporary table
+    cursor.execute("SELECT * FROM temp_result")
     results = cursor.fetchall()
+
+    # Drop the temporary table
+    cursor.execute("DROP TEMPORARY TABLE IF EXISTS temp_result;")
+    
     sports_participants = [
         {"sport": result[0], "country": result[1], "athlete": result[2]}
         for result in results
