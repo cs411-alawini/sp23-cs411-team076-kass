@@ -272,15 +272,48 @@ def create_stored_procedure():
         cursor.execute("""
             CREATE PROCEDURE GetFilteredSportsParticipants(IN sport_name VARCHAR(100), IN country_name VARCHAR(100))
             BEGIN
-                SELECT Sport.NAME as Sport, Country.NAME as Country, Athlete.NAME as Athlete
-                FROM Sport
-                JOIN Plays ON Sport.ID = Plays.SPORTID
-                INNER JOIN Athlete ON Plays.ATHLETEID = Athlete.ID
-                INNER JOIN Country ON Athlete.COUNTRYID = Country.ID
-                WHERE (Sport.NAME = sport_name OR sport_name = '')
-                  AND (Country.NAME = country_name OR country_name = '')
-                GROUP BY Sport.NAME, Country.NAME, Athlete.ID
-                ORDER BY Sport.NAME;
+                DECLARE done INT DEFAULT FALSE;
+                DECLARE data_found INT DEFAULT 0;
+                DECLARE cur CURSOR FOR
+                    SELECT Sport.NAME as Sport, Country.NAME as Country, Athlete.NAME as Athlete
+                    FROM Sport
+                    JOIN Plays ON Sport.ID = Plays.SPORTID
+                    INNER JOIN Athlete ON Plays.ATHLETEID = Athlete.ID
+                    INNER JOIN Country ON Athlete.COUNTRYID = Country.ID
+                    WHERE (Sport.NAME = sport_name OR sport_name = '')
+                      AND (Country.NAME = country_name OR country_name = '')
+                    GROUP BY Sport.NAME, Country.NAME, Athlete.ID
+                    ORDER BY Sport.NAME;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+                DROP TEMPORARY TABLE IF EXISTS temp_result;
+                CREATE TEMPORARY TABLE temp_result (
+                    sport VARCHAR(100),
+                    country VARCHAR(100),
+                    athlete VARCHAR(100)
+                );
+
+                OPEN cur;
+                read_loop: LOOP
+                    FETCH cur INTO sport_name, country_name, athlete_name;
+
+                    IF done THEN
+                        LEAVE read_loop;
+                    END IF;
+
+                    SET data_found = 1;
+                    INSERT INTO temp_result(sport, country, athlete) VALUES (sport_name, country_name, athlete_name);
+                END LOOP;
+                CLOSE cur;
+
+                IF data_found = 0 THEN
+                    INSERT INTO temp_result(sport, country, athlete) VALUES ('No player available for sport', '', '');
+                END IF;
+
+                SELECT * FROM temp_result;
+
+                DROP TEMPORARY TABLE IF EXISTS temp_result;
+
             END
         """)
     cursor.close()
