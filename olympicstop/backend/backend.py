@@ -588,7 +588,7 @@ def login():
         return jsonify({"msg": "Missing username parameter"}), 400
     if not password:
         return jsonify({"msg": "Missing password parameter"}), 400
-    cursor = db.cursor()
+    cursor = conn.cursor()
     cursor.execute("SELECT ID, FIRSTNAME, LASTNAME, EMAIL FROM Users WHERE USERNAME=%s AND PASSWORD=%s", (username, password))
     user = cursor.fetchone()
     if user is None:
