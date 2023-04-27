@@ -11,6 +11,7 @@ import StoredProceduredFilter from './components/Medal/StoredProceduredFilter';
 import Bobba from './components/Athelete/Visuals/BubbleChart';
 import Schedule from './components/Medal/Schedule';
 import Login from './components/NavBar/Login';
+import StoredVisual from './components/Medal/StoredVisual';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="sp2" element={<Bobba />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="stored" element={<StoredProceduredFilter />} />
+          <Route path="sv" element={<StoredVisual />} />
         </Route>
       </Routes>
     </Router>

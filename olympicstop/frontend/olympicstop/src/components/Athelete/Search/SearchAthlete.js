@@ -36,6 +36,7 @@ const SearchAthlete = () => {
         <button onClick={() => navigate(`/filter`)}>Filter</button>
         <button onClick={() => navigate(`/stored`)}>Stored</button>
         <button onClick={() => navigate(`/sp2`)}>SP2</button>
+        <button onClick={() => navigate(`/sv`)}>Stored Visual</button>
       </div>
       {searchResults.length > 0 ? (
         <table>
