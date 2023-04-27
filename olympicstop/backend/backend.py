@@ -258,36 +258,57 @@ def update_medals():
     else:
         return jsonify({"error": f"No changes made for '{country}'"}), 400
 
+@app.route("/ranking1")
+def get_ranking1():
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT TRIM(Country.NAME), SUM(Medals.TOTAL)
+            FROM Country
+            JOIN Medals ON Country.ID = Medals.COUNTRYID
+            JOIN Plays ON Medals.COUNTRYID = Plays.ATHLETEID
+            JOIN Sport ON Plays.SPORTID = Sport.ID
+            GROUP BY Country.NAME
+            ORDER BY SUM(Medals.TOTAL) DESC
+            """
+        )
+        results = cursor.fetchall()
+        ranking1 = [
+            {"country": result[0].rstrip("\r"), "total": result[1]}
+            for result in results
+        ]
+    response = {"ranking1": ranking1}
+    return jsonify(response)
+
 
 @app.route("/ranking")
 def get_ranking():
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT TRIM(Country.NAME), SUM(Medals.GOLD), SUM(Medals.SILVER), SUM(Medals.BRONZE)
-        FROM Country
-        JOIN Medals ON Country.ID = Medals.COUNTRYID
-        JOIN Plays ON Medals.COUNTRYID = Plays.ATHLETEID
-        JOIN Sport ON Plays.SPORTID = Sport.ID
-        GROUP BY Country.NAME
-        ORDER BY SUM(Medals.TOTAL) DESC
-        LIMIT 15
-    """
-    )
-    results = cursor.fetchall()
-    ranking = []
-    for result in results:
-        ranking.append(
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT TRIM(Country.NAME), SUM(Medals.GOLD), SUM(Medals.SILVER), SUM(Medals.BRONZE)
+            FROM Country
+            JOIN Medals ON Country.ID = Medals.COUNTRYID
+            JOIN Plays ON Medals.COUNTRYID = Plays.ATHLETEID
+            JOIN Sport ON Plays.SPORTID = Sport.ID
+            GROUP BY Country.NAME
+            ORDER BY SUM(Medals.TOTAL) DESC
+            LIMIT 15
+            """
+        )
+        results = cursor.fetchall()
+        ranking = [
             {
                 "country": result[0].rstrip("\r"),
                 "gold": result[1],
                 "silver": result[2],
                 "bronze": result[3],
             }
-        )
+            for result in results
+        ]
     response = {"ranking": ranking}
-    cursor.close()
     return jsonify(response)
+
 
 
 def adding_trigger(conn):
@@ -385,28 +406,6 @@ def get_filtered_sports_participants():
     cursor.close()
     return jsonify(response)
 
-
-@app.route("/ranking1")
-def get_ranking1():
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        SELECT TRIM(Country.NAME), SUM(Medals.TOTAL)
-        FROM Country
-        JOIN Medals ON Country.ID = Medals.COUNTRYID
-        JOIN Plays ON Medals.COUNTRYID = Plays.ATHLETEID
-        JOIN Sport ON Plays.SPORTID = Sport.ID
-        GROUP BY Country.NAME
-        ORDER BY SUM(Medals.TOTAL) DESC
-    """
-    )
-    results = cursor.fetchall()
-    ranking1 = []
-    for result in results:
-        ranking1.append({"country": result[0].rstrip("\r"), "total": result[1]})
-    response = {"ranking1": ranking1}
-    cursor.close()
-    return jsonify(response)
 
 
 @app.route("/sports_and_countries")
