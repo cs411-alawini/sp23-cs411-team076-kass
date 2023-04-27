@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import pymysql
-from flask_cors import CORS
+from flask_cors import CORS,cross_origin
 import json
 from google.cloud.sql.connector import Connector
 
@@ -14,7 +14,8 @@ conn: pymysql.connections.Connection = connector.connect(
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.route("/medalstats")
@@ -576,7 +577,8 @@ def get_schedule():
     return jsonify(result)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
