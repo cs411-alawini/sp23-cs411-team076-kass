@@ -18,15 +18,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/*" element={<LayoutsWithNavbar />}>
-          <Route path="/atheletes" element={<SearchAthlete />} />
-          <Route path="/medals" element={<MedalTable />} />
-          <Route path="/add" element={<AddAthlete />} />
-          <Route path="/delete" element={<DeleteAthlete />} />
-          <Route path="/update" element={<UpdateMedals />} />
-          <Route path="/filter" element={<SportsParticipants />} />
-          <Route path="/sp2" element={<Bobba />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/stored" element={<StoredProceduredFilter />} />
+          <Route path="atheletes" element={<SearchAthlete />} />
+          <Route path="medals" element={<MedalTable />} />
+          <Route path="add" element={<AddAthlete />} />
+          <Route path="delete" element={<DeleteAthlete />} />
+          <Route path="update" element={<UpdateMedals />} />
+          <Route path="filter" element={<SportsParticipants />} />
+          <Route path="sp2" element={<Bobba />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="stored" element={<StoredProceduredFilter />} />
         </Route>
       </Routes>
     </Router>
