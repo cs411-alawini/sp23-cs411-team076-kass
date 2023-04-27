@@ -12,18 +12,26 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://35.209.21.140:8000/login', {
-        username: email,
-        password: password
-      })
+      const response = await axios.post(
+        'http://35.209.21.140:8000/login',
+        {
+          username: email,
+          password: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       if (response.status === 200) {
-        navigate('/navbar')
+        navigate('/navbar');
       }
     } catch (err) {
-      setError('Invalid username or password')
+      setError('Invalid username or password');
     }
-  }
-
+  };
+  
   const isFormValid = () => {
     return emailRegex.test(email) && password.length >= 6
   }
