@@ -576,5 +576,31 @@ def get_schedule():
     return jsonify(result)
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    if not username:
+        return jsonify({"msg": "Missing username parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+    cursor = db.cursor()
+    cursor.execute("SELECT ID, FIRSTNAME, LASTNAME, EMAIL FROM Users WHERE USERNAME=%s AND PASSWORD=%s", (username, password))
+    user = cursor.fetchone()
+    if user is None:
+        return jsonify({"msg": "Invalid username or password"}), 401
+    user_info = {
+        'id': user[0],
+        'firstName': user[1],
+        'email': user[3]
+    }
+    return jsonify(user_info), 200
+
+if __name__ == '__main__':
+    app.run
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
