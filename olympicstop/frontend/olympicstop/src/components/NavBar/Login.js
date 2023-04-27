@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const history = useHistory()
+  const navigate = useNavigate();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.(com|edu)$/
 
@@ -17,7 +17,7 @@ const Login = () => {
         password: password
       })
       if (response.status === 200) {
-        history.push('/navbar')
+        navigate('/navbar')
       }
     } catch (err) {
       setError('Invalid username or password')
