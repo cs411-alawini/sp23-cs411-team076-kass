@@ -14,7 +14,7 @@ conn: pymysql.connections.Connection = connector.connect(
 )
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://35.209.21.140:3000"], "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
