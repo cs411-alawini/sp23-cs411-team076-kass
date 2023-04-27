@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import './Login.css'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.(com|edu)$/
 
@@ -16,49 +17,63 @@ const Login = () => {
         'http://35.209.21.140:8000/login',
         {
           username: email,
-          password: password,
+          password: password
         },
         {
           headers: {
-            'Content-Type': 'application/json',
-          },
+            'Content-Type': 'application/json'
+          }
         }
-      );
+      )
       if (response.status === 200) {
-        navigate('/navbar');
+        navigate('/navbar')
       }
     } catch (err) {
-      setError('Invalid username or password');
+      setError('Invalid username or password')
     }
-  };
-  
+  }
+
   const isFormValid = () => {
     return emailRegex.test(email) && password.length >= 6
   }
 
   return (
-    <div>
-      <h1>Login</h1>
-      <div>
-        <label>Email:</label>
-        <input
-          type='email'
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
+    <div className='main-div'>
+      <div className='container-div'>
+        <h1>Login</h1>
+        <br></br>
+        <div className='input-div'>
+          <div className='input-label'>
+            <label>Email:</label>
+          </div>
+          <div>
+            <input
+              type='email'
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+          </div>
+        </div>
+        <br></br>
+        <div className='input-div'>
+          <div className='input-label'>
+            <label>Password:</label>
+          </div>
+          <div>
+            <input
+              type='password'
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
+        {error && <p>{error}</p>}
+        <br></br>
+        <br></br>
+        <button onClick={handleLogin} disabled={!isFormValid()}>
+          Login
+        </button>
       </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type='password'
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-      </div>
-      {error && <p>{error}</p>}
-      <button onClick={handleLogin} disabled={!isFormValid()}>
-        Login
-      </button>
     </div>
   )
 }
