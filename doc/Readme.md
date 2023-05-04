@@ -6,3 +6,5 @@
 3. Conceptual and Logical Database Design.pdf  - Contain ER Diagram and Relational Schema
 
 4. Database Design              -                 Contains DB table DDL statement and advanced queries 
+
+5. Project Report               -                  Contains Final Project Report
